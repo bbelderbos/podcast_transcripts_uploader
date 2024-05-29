@@ -8,13 +8,12 @@ from log import has_processed_episode, log_episode
 BUZZSPROUT_API_KEY = config("BUZZSPROUT_API_KEY")
 PODCAST_ID = config("PODCAST_ID")
 FEED = f"https://feeds.buzzsprout.com/{PODCAST_ID}.rss"
-PUT_URL = (
+TRANSCRIPT_ENDPOINT = (
     f"https://www.buzzsprout.com/api/{PODCAST_ID}/" + "episodes/{episode_id}/transcript"
 )
 TRANSCTIPT_DIR = config("TRANSCTIPT_DIR")
 HEADERS = {
     "Authorization": f"Token token={BUZZSPROUT_API_KEY}",
-    "Content-Type": "application/json",
 }
 
 
@@ -35,8 +34,7 @@ def get_episode_ids(feed=FEED) -> list[str]:
 
 
 def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> None:
-    # TODO: remove slicing
-    for episode_id in episode_ids[:10]:
+    for episode_id in episode_ids:
         if episode_id not in transcripts:
             print("ERROR: no transcript found for", episode_id)
             continue
@@ -49,17 +47,24 @@ def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> N
         file_path = transcripts[episode_id]
 
         with open(file_path, "rb") as f:
-            url = PUT_URL.format(episode_id=episode_id)
-            files = {"transcript-file": f}
-            data = {"transcript-format": "srt"}
+            url = TRANSCRIPT_ENDPOINT.format(episode_id=episode_id)
+            print("processing", url, file_path)
+            files = {"transcript_file": f}
+            data = {"transcript_format": "srt"}
 
             response = requests.post(url, headers=HEADERS, files=files, data=data)
 
-            if response.status_code == 200:
+            if response.status_code == 204:
                 print("uploaded", episode_id)
                 log_episode(episode_id)
             else:
-                print("ERROR uploading", episode_id, response.text)
+                print("ERROR uploading", episode_id)
+                print("Status Code:", response.status_code)
+                print("Response Text:", response.text)
+                try:
+                    print("Response JSON:", response.json())
+                except ValueError:
+                    print("Response is not JSON")
 
 
 if __name__ == "__main__":
