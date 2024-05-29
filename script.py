@@ -21,7 +21,7 @@ HEADERS = {
 def get_transcripts(transcript_dir=TRANSCTIPT_DIR) -> dict[str, str]:
     return {
         file.stem.split("-")[0]: str(file.resolve())
-        for file in Path(TRANSCTIPT_DIR).glob("*.srt")
+        for file in Path(transcript_dir).glob("*.srt")
     }
 
 
