@@ -3,7 +3,7 @@ from decouple import config
 LOG_FILE = config("LOG_FILE", default="log.txt")
 
 
-def has_processed_episode(episode_id: int) -> bool:
+def has_processed_episode(episode_id: str) -> bool:
     """
     Check if we already processed this episode.
     """
@@ -15,7 +15,7 @@ def has_processed_episode(episode_id: int) -> bool:
         return False
 
 
-def log_episode(episode_id: int) -> None:
+def log_episode(episode_id: str) -> None:
     """
     Log the episode as processed.
     """
