@@ -6,15 +6,12 @@ from decouple import config
 from log import has_processed_episode, log_episode
 
 BUZZSPROUT_API_KEY = config("BUZZSPROUT_API_KEY")
-PODCAST_ID = 1501156
+PODCAST_ID = config("PODCAST_ID")
 FEED = f"https://feeds.buzzsprout.com/{PODCAST_ID}.rss"
 PUT_URL = (
     f"https://www.buzzsprout.com/api/{PODCAST_ID}/" + "episodes/{episode_id}/transcript"
 )
-TRANSCTIPT_DIR = config(
-    "TRANSCTIPT_DIR",
-    default="/Users/bbelderbos/code/pybites-ai/scripts/outputs/podcast",
-)
+TRANSCTIPT_DIR = config("TRANSCTIPT_DIR")
 HEADERS = {
     "Authorization": f"Token token={BUZZSPROUT_API_KEY}",
     "Content-Type": "application/json",
@@ -39,7 +36,7 @@ def get_episode_ids(feed=FEED) -> list[str]:
 
 def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> None:
     # TODO: remove slicing
-    for episode_id in episode_ids[::-1][:2]:
+    for episode_id in episode_ids[:10]:
         if episode_id not in transcripts:
             print("ERROR: no transcript found for", episode_id)
             continue
