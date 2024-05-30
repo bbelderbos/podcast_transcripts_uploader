@@ -12,6 +12,7 @@ def all_episodes_have_transcripts(feed=FEED) -> bool:
             if not entry.podcast_transcript["url"]:
                 return False
         except (AttributeError, KeyError):
+            print(f"Transcript missing for {entry.title}")
             return False
     return True
 
