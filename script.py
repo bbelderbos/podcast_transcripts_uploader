@@ -3,8 +3,6 @@ import requests
 import feedparser
 from decouple import config
 
-from log import has_processed_episode, log_episode
-
 BUZZSPROUT_API_KEY = config("BUZZSPROUT_API_KEY")
 PODCAST_ID = config("PODCAST_ID")
 FEED = f"https://feeds.buzzsprout.com/{PODCAST_ID}.rss"
@@ -15,6 +13,9 @@ TRANSCTIPT_DIR = config("TRANSCTIPT_DIR")
 HEADERS = {
     "Authorization": f"Token token={BUZZSPROUT_API_KEY}",
 }
+PUBLIC_EPISODE_URL = (
+    f"https://www.buzzsprout.com/{PODCAST_ID}/" + "{episode_id}/transcript"
+)
 
 
 def get_transcripts(transcript_dir=TRANSCTIPT_DIR) -> dict[str, str]:
@@ -39,8 +40,9 @@ def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> N
             print("ERROR: no transcript found for", episode_id)
             continue
 
-        # cannot get this from API episode endpoint
-        if has_processed_episode(episode_id):
+        transcript_url = PUBLIC_EPISODE_URL.format(episode_id=episode_id)
+        response = requests.head(transcript_url)
+        if response.status_code == 200:
             print("already processed", episode_id)
             continue
 
@@ -56,7 +58,6 @@ def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> N
 
             if response.status_code == 204:
                 print("uploaded", episode_id)
-                log_episode(episode_id)
             else:
                 print("ERROR uploading", episode_id)
                 print("Status Code:", response.status_code)
