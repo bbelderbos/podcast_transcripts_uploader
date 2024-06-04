@@ -12,7 +12,7 @@ TRANSCRIPT_ENDPOINT = (
 TRANSCTIPT_DIR = config("TRANSCTIPT_DIR")
 HEADERS = {
     "Authorization": f"Token token={BUZZSPROUT_API_KEY}",
-    "User-Agent": "Pybit.es/1.0 bob@pybit.es",
+    "User-Agent": config("USER_AGENT"),
 }
 
 PUBLIC_EPISODE_URL = (
