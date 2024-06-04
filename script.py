@@ -12,7 +12,9 @@ TRANSCRIPT_ENDPOINT = (
 TRANSCTIPT_DIR = config("TRANSCTIPT_DIR")
 HEADERS = {
     "Authorization": f"Token token={BUZZSPROUT_API_KEY}",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
 }
+
 PUBLIC_EPISODE_URL = (
     f"https://www.buzzsprout.com/{PODCAST_ID}/" + "{episode_id}/transcript"
 )
@@ -41,7 +43,7 @@ def upload_transcripts(episode_ids: list[str], transcripts: dict[str, str]) -> N
             continue
 
         transcript_url = PUBLIC_EPISODE_URL.format(episode_id=episode_id)
-        response = requests.head(transcript_url)
+        response = requests.head(transcript_url, headers=HEADERS)
         if response.status_code == 200:
             print("already processed", episode_id)
             continue
